@@ -8,3 +8,4 @@
 - Added local installation documentation
 - Added privacy model, maintenance notes, and contribution templates
 - Added manual browser test matrix
+- Added Windows executable source and build script

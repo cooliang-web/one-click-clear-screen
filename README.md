@@ -35,6 +35,10 @@ See [docs/USAGE.md](docs/USAGE.md) for usage notes and limitations.
 
 The extension is built with Manifest V3 and targets Chromium-based browsers, including Chrome and Edge.
 
+## Windows executable
+
+This repository also includes a Windows executable version. It blanks all connected screens when launched and restores on `Esc` or click. See [docs/WINDOWS_EXE.md](docs/WINDOWS_EXE.md).
+
 ## Privacy
 
 This extension only injects a temporary blank overlay into the active tab after you click the toolbar button or use the shortcut. It does not read, store, transmit, or analyze page content.
@@ -53,6 +57,7 @@ The project has no build step.
 manifest.json        Extension metadata and permissions
 src/background.js    Toolbar button and shortcut handling
 src/content.js       Temporary clear-screen overlay
+windows/             Windows executable source
 ```
 
 See [docs/MAINTENANCE.md](docs/MAINTENANCE.md) for release and review guidance.
