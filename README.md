@@ -29,6 +29,8 @@ People often need a fast privacy switch when sharing a screen, working in public
 
 The extension should appear in your browser toolbar. Pin it if you want one-click access.
 
+See [docs/USAGE.md](docs/USAGE.md) for usage notes and limitations.
+
 ## Browser support
 
 The extension is built with Manifest V3 and targets Chromium-based browsers, including Chrome and Edge.
@@ -36,6 +38,8 @@ The extension is built with Manifest V3 and targets Chromium-based browsers, inc
 ## Privacy
 
 This extension only injects a temporary blank overlay into the active tab after you click the toolbar button or use the shortcut. It does not read, store, transmit, or analyze page content.
+
+See [docs/PRIVACY_MODEL.md](docs/PRIVACY_MODEL.md) for the permission and privacy model.
 
 ## Security
 
@@ -50,6 +54,8 @@ manifest.json        Extension metadata and permissions
 src/background.js    Toolbar button and shortcut handling
 src/content.js       Temporary clear-screen overlay
 ```
+
+See [docs/MAINTENANCE.md](docs/MAINTENANCE.md) for release and review guidance.
 
 ## Roadmap
 
