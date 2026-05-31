@@ -56,6 +56,7 @@ src/content.js       Temporary clear-screen overlay
 ```
 
 See [docs/MAINTENANCE.md](docs/MAINTENANCE.md) for release and review guidance.
+See [docs/TEST_MATRIX.md](docs/TEST_MATRIX.md) for the manual browser test matrix.
 
 ## Roadmap
 
