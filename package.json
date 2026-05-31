@@ -1,0 +1,27 @@
+{
+  "name": "one-click-clear-screen",
+  "version": "0.1.0",
+  "description": "A one-click browser extension that blanks the current tab for quick privacy.",
+  "private": true,
+  "license": "MIT",
+  "author": "cooliang-web",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/cooliang-web/one-click-clear-screen.git"
+  },
+  "bugs": {
+    "url": "https://github.com/cooliang-web/one-click-clear-screen/issues"
+  },
+  "homepage": "https://github.com/cooliang-web/one-click-clear-screen#readme",
+  "scripts": {
+    "check": "node scripts/check-extension.js",
+    "package": "powershell -NoProfile -ExecutionPolicy Bypass -File scripts/package.ps1"
+  },
+  "keywords": [
+    "browser-extension",
+    "privacy",
+    "screen-sharing",
+    "clear-screen",
+    "manifest-v3"
+  ]
+}

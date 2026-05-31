@@ -1,0 +1,25 @@
+{
+  "manifest_version": 3,
+  "name": "One Click Clear Screen",
+  "version": "0.1.0",
+  "description": "Blank the current tab instantly, then restore with one click or Esc.",
+  "action": {
+    "default_title": "Clear screen"
+  },
+  "background": {
+    "service_worker": "src/background.js"
+  },
+  "permissions": [
+    "activeTab",
+    "scripting"
+  ],
+  "commands": {
+    "toggle-clear-screen": {
+      "suggested_key": {
+        "default": "Ctrl+Shift+K",
+        "mac": "Command+Shift+K"
+      },
+      "description": "Toggle clear screen"
+    }
+  }
+}
