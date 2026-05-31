@@ -29,6 +29,8 @@ Before a release, test:
 - The extension does not run on restricted browser pages.
 - The page scroll state and layout recover after restore.
 
+Use [TEST_MATRIX.md](TEST_MATRIX.md) to record browser coverage and release readiness.
+
 ## Roadmap policy
 
 Roadmap items should stay focused on the one-click privacy workflow. Features that require remote services, analytics, or broad page access should be rejected unless there is a strong documented reason.
