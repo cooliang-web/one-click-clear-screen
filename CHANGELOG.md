@@ -1,5 +1,11 @@
 # Changelog
 
+## 0.2.0
+
+- Changed the Windows executable from a black cover to a clean desktop-background overlay.
+- Desktop icons and windows are hidden behind the overlay while the wallpaper-style background remains visible.
+- Kept `Esc` and click-to-restore behavior.
+
 ## 0.1.0
 
 - Initial Manifest V3 browser extension
