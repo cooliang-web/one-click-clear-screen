@@ -1,5 +1,11 @@
 # Changelog
 
+## 0.3.0
+
+- Changed the Windows executable from a full-screen overlay to a compact interface.
+- The compact window is about 30% of the main screen area.
+- Added the visible title `一键清屏` at the top of the window.
+
 ## 0.2.0
 
 - Changed the Windows executable from a black cover to a clean desktop-background overlay.
