@@ -28,19 +28,25 @@ namespace OneClickClearScreen
 
         public ClearScreenContext()
         {
-            Screen[] screens = Screen.AllScreens;
-            if (screens.Length == 0)
-            {
-                screens = new[] { Screen.PrimaryScreen };
-            }
+            Screen screen = Screen.PrimaryScreen ?? Screen.AllScreens[0];
+            OverlayForm form = new OverlayForm(GetCompactBounds(screen.WorkingArea), CloseAll);
+            forms.Add(form);
+            form.Show();
+        }
 
-            for (int index = 0; index < screens.Length; index++)
-            {
-                bool primary = screens[index].Primary || index == 0;
-                OverlayForm form = new OverlayForm(screens[index].Bounds, primary, CloseAll);
-                forms.Add(form);
-                form.Show();
-            }
+        private static Rectangle GetCompactBounds(Rectangle workingArea)
+        {
+            const double scale = 0.55;
+            int width = Math.Max(360, (int)Math.Round(workingArea.Width * scale));
+            int height = Math.Max(240, (int)Math.Round(workingArea.Height * scale));
+            width = Math.Min(width, workingArea.Width);
+            height = Math.Min(height, workingArea.Height);
+
+            return new Rectangle(
+                workingArea.Left + (workingArea.Width - width) / 2,
+                workingArea.Top + (workingArea.Height - height) / 2,
+                width,
+                height);
         }
 
         private void CloseAll()
@@ -68,13 +74,13 @@ namespace OneClickClearScreen
         private readonly Action closeAll;
         private readonly Image wallpaperImage;
 
-        public OverlayForm(Rectangle bounds, bool showHint, Action closeAll)
+        public OverlayForm(Rectangle bounds, Action closeAll)
         {
             this.closeAll = closeAll;
             wallpaperImage = WallpaperRenderer.CreateScreenImage(bounds);
 
             Bounds = bounds;
-            Text = "One Click Clear Screen";
+            Text = "一键清屏";
             StartPosition = FormStartPosition.Manual;
             FormBorderStyle = FormBorderStyle.None;
             BackColor = WallpaperRenderer.GetDesktopColor();
@@ -82,23 +88,37 @@ namespace OneClickClearScreen
             BackgroundImageLayout = ImageLayout.Stretch;
             ForeColor = Color.FromArgb(80, 80, 80);
             TopMost = true;
-            ShowInTaskbar = showHint;
+            ShowInTaskbar = true;
             KeyPreview = true;
             Cursor = Cursors.Default;
 
-            if (showHint)
-            {
-                Label hint = new Label();
-                hint.AutoSize = true;
-                hint.Text = "Esc or click to restore";
-                hint.ForeColor = Color.FromArgb(130, 130, 130);
-                hint.BackColor = Color.Transparent;
-                hint.Font = new Font("Segoe UI", 10.0f, FontStyle.Regular);
-                hint.Anchor = AnchorStyles.Right | AnchorStyles.Bottom;
-                hint.Location = new Point(bounds.Width - 180, bounds.Height - 36);
-                hint.Click += delegate { closeAll(); };
-                Controls.Add(hint);
-            }
+            Panel titlePanel = new Panel();
+            titlePanel.Dock = DockStyle.Top;
+            titlePanel.Height = 58;
+            titlePanel.BackColor = Color.FromArgb(245, 245, 245);
+            titlePanel.Click += delegate { closeAll(); };
+            Controls.Add(titlePanel);
+
+            Label title = new Label();
+            title.Dock = DockStyle.Fill;
+            title.Text = "一键清屏";
+            title.TextAlign = ContentAlignment.MiddleCenter;
+            title.ForeColor = Color.FromArgb(30, 30, 30);
+            title.BackColor = Color.Transparent;
+            title.Font = new Font("Microsoft YaHei UI", 18.0f, FontStyle.Bold);
+            title.Click += delegate { closeAll(); };
+            titlePanel.Controls.Add(title);
+
+            Label hint = new Label();
+            hint.AutoSize = true;
+            hint.Text = "Esc 或点击窗口恢复";
+            hint.ForeColor = Color.FromArgb(120, 120, 120);
+            hint.BackColor = Color.Transparent;
+            hint.Font = new Font("Microsoft YaHei UI", 10.0f, FontStyle.Regular);
+            hint.Anchor = AnchorStyles.Right | AnchorStyles.Bottom;
+            hint.Location = new Point(bounds.Width - 166, bounds.Height - 34);
+            hint.Click += delegate { closeAll(); };
+            Controls.Add(hint);
 
             Click += delegate { closeAll(); };
             KeyDown += OnKeyDown;
@@ -108,7 +128,6 @@ namespace OneClickClearScreen
         protected override void OnShown(EventArgs e)
         {
             base.OnShown(e);
-            WindowState = FormWindowState.Maximized;
             Activate();
             Focus();
         }
@@ -177,9 +196,9 @@ namespace OneClickClearScreen
             return SystemColors.Desktop;
         }
 
-        public static Image CreateScreenImage(Rectangle screenBounds)
+        public static Image CreateScreenImage(Rectangle windowBounds)
         {
-            Bitmap image = new Bitmap(Math.Max(1, screenBounds.Width), Math.Max(1, screenBounds.Height));
+            Bitmap image = new Bitmap(Math.Max(1, windowBounds.Width), Math.Max(1, windowBounds.Height));
             using (Graphics graphics = Graphics.FromImage(image))
             {
                 graphics.Clear(GetDesktopColor());
@@ -198,19 +217,25 @@ namespace OneClickClearScreen
                     using (Image wallpaper = Image.FromFile(wallpaperPath))
                     {
                         WallpaperMode mode = GetWallpaperMode();
+                        Rectangle monitorBounds = GetContainingScreenBounds(windowBounds);
+                        GraphicsState state = graphics.Save();
+                        graphics.TranslateTransform(-windowBounds.Left, -windowBounds.Top);
+
                         if (mode == WallpaperMode.Span)
                         {
-                            DrawSpan(graphics, wallpaper, screenBounds);
+                            DrawSpan(graphics, wallpaper);
                         }
                         else if (mode == WallpaperMode.Tile)
                         {
-                            DrawTiled(graphics, wallpaper, new Rectangle(Point.Empty, image.Size));
+                            DrawTiled(graphics, wallpaper, monitorBounds);
                         }
                         else
                         {
-                            RectangleF destination = GetDestinationRectangle(wallpaper, new Rectangle(Point.Empty, image.Size), mode);
+                            RectangleF destination = GetDestinationRectangle(wallpaper, monitorBounds, mode);
                             graphics.DrawImage(wallpaper, destination);
                         }
+
+                        graphics.Restore(state);
                     }
                 }
                 catch
@@ -222,14 +247,24 @@ namespace OneClickClearScreen
             return image;
         }
 
-        private static void DrawSpan(Graphics graphics, Image wallpaper, Rectangle screenBounds)
+        private static Rectangle GetContainingScreenBounds(Rectangle bounds)
+        {
+            foreach (Screen screen in Screen.AllScreens)
+            {
+                if (screen.Bounds.Contains(bounds.Location))
+                {
+                    return screen.Bounds;
+                }
+            }
+
+            return Screen.PrimaryScreen == null ? SystemInformation.VirtualScreen : Screen.PrimaryScreen.Bounds;
+        }
+
+        private static void DrawSpan(Graphics graphics, Image wallpaper)
         {
             Rectangle virtualBounds = SystemInformation.VirtualScreen;
             RectangleF destination = GetDestinationRectangle(wallpaper, virtualBounds, WallpaperMode.Fill);
-            GraphicsState state = graphics.Save();
-            graphics.TranslateTransform(-screenBounds.Left, -screenBounds.Top);
             graphics.DrawImage(wallpaper, destination);
-            graphics.Restore(state);
         }
 
         private static void DrawTiled(Graphics graphics, Image wallpaper, Rectangle bounds)
