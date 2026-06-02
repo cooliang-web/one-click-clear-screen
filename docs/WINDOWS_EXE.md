@@ -18,12 +18,12 @@ dist\OneClickClearScreen.exe
 
 ## Use
 
-Double-click `OneClickClearScreen.exe`. It immediately covers all connected screens with a desktop-background overlay. Desktop icons and existing windows stay behind the overlay, so the screen looks clean without turning black.
+Double-click `OneClickClearScreen.exe`. It opens a compact desktop-background overlay titled `一键清屏`. The window is about 30% of the main screen area. Desktop icons and existing windows stay behind the overlay, so that part of the screen looks clean without turning black.
 
 Restore with either action:
 
 - Press `Esc`.
-- Click the clean desktop overlay.
+- Click the compact clean desktop overlay.
 
 ## Scope
 
