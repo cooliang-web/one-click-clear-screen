@@ -18,12 +18,12 @@ dist\OneClickClearScreen.exe
 
 ## Use
 
-Double-click `OneClickClearScreen.exe`. It opens a compact desktop-background overlay titled `一键清屏`. The window is about 30% of the main screen area. Desktop icons and existing windows stay behind the overlay, so that part of the screen looks clean without turning black.
+Double-click `OneClickClearScreen.exe`. It covers the desktop with a clean wallpaper-style layer so desktop icons and existing windows are hidden behind the app. The visible center interface is titled `一键清屏` and is about 30% of the main screen area.
 
 Restore with either action:
 
 - Press `Esc`.
-- Click the compact clean desktop overlay.
+- Click the clean desktop overlay or the center interface.
 
 ## Scope
 
