@@ -28,25 +28,19 @@ namespace OneClickClearScreen
 
         public ClearScreenContext()
         {
-            Screen screen = Screen.PrimaryScreen ?? Screen.AllScreens[0];
-            OverlayForm form = new OverlayForm(GetCompactBounds(screen.WorkingArea), CloseAll);
-            forms.Add(form);
-            form.Show();
-        }
+            Screen[] screens = Screen.AllScreens;
+            if (screens.Length == 0)
+            {
+                screens = new[] { Screen.PrimaryScreen };
+            }
 
-        private static Rectangle GetCompactBounds(Rectangle workingArea)
-        {
-            const double scale = 0.55;
-            int width = Math.Max(360, (int)Math.Round(workingArea.Width * scale));
-            int height = Math.Max(240, (int)Math.Round(workingArea.Height * scale));
-            width = Math.Min(width, workingArea.Width);
-            height = Math.Min(height, workingArea.Height);
-
-            return new Rectangle(
-                workingArea.Left + (workingArea.Width - width) / 2,
-                workingArea.Top + (workingArea.Height - height) / 2,
-                width,
-                height);
+            for (int index = 0; index < screens.Length; index++)
+            {
+                bool primary = screens[index].Primary || index == 0;
+                OverlayForm form = new OverlayForm(screens[index].Bounds, primary, CloseAll);
+                forms.Add(form);
+                form.Show();
+            }
         }
 
         private void CloseAll()
@@ -74,7 +68,7 @@ namespace OneClickClearScreen
         private readonly Action closeAll;
         private readonly Image wallpaperImage;
 
-        public OverlayForm(Rectangle bounds, Action closeAll)
+        public OverlayForm(Rectangle bounds, bool showInterface, Action closeAll)
         {
             this.closeAll = closeAll;
             wallpaperImage = WallpaperRenderer.CreateScreenImage(bounds);
@@ -88,41 +82,70 @@ namespace OneClickClearScreen
             BackgroundImageLayout = ImageLayout.Stretch;
             ForeColor = Color.FromArgb(80, 80, 80);
             TopMost = true;
-            ShowInTaskbar = true;
+            ShowInTaskbar = showInterface;
             KeyPreview = true;
             Cursor = Cursors.Default;
 
-            Panel titlePanel = new Panel();
-            titlePanel.Dock = DockStyle.Top;
-            titlePanel.Height = 58;
-            titlePanel.BackColor = Color.FromArgb(245, 245, 245);
-            titlePanel.Click += delegate { closeAll(); };
-            Controls.Add(titlePanel);
-
-            Label title = new Label();
-            title.Dock = DockStyle.Fill;
-            title.Text = "一键清屏";
-            title.TextAlign = ContentAlignment.MiddleCenter;
-            title.ForeColor = Color.FromArgb(30, 30, 30);
-            title.BackColor = Color.Transparent;
-            title.Font = new Font("Microsoft YaHei UI", 18.0f, FontStyle.Bold);
-            title.Click += delegate { closeAll(); };
-            titlePanel.Controls.Add(title);
-
-            Label hint = new Label();
-            hint.AutoSize = true;
-            hint.Text = "Esc 或点击窗口恢复";
-            hint.ForeColor = Color.FromArgb(120, 120, 120);
-            hint.BackColor = Color.Transparent;
-            hint.Font = new Font("Microsoft YaHei UI", 10.0f, FontStyle.Regular);
-            hint.Anchor = AnchorStyles.Right | AnchorStyles.Bottom;
-            hint.Location = new Point(bounds.Width - 166, bounds.Height - 34);
-            hint.Click += delegate { closeAll(); };
-            Controls.Add(hint);
+            if (showInterface)
+            {
+                AddCompactInterface(bounds.Size);
+            }
 
             Click += delegate { closeAll(); };
             KeyDown += OnKeyDown;
             Deactivate += delegate { TopMost = true; };
+        }
+
+        private void AddCompactInterface(Size screenSize)
+        {
+            const double scale = 0.55;
+            int width = Math.Max(360, (int)Math.Round(screenSize.Width * scale));
+            int height = Math.Max(240, (int)Math.Round(screenSize.Height * scale));
+            width = Math.Min(width, screenSize.Width - 24);
+            height = Math.Min(height, screenSize.Height - 24);
+
+            Panel panel = new Panel();
+            panel.Size = new Size(width, height);
+            panel.Location = new Point((screenSize.Width - width) / 2, (screenSize.Height - height) / 2);
+            panel.BackColor = Color.FromArgb(246, 246, 246);
+            panel.BorderStyle = BorderStyle.FixedSingle;
+            panel.Click += delegate { closeAll(); };
+            Controls.Add(panel);
+            panel.BringToFront();
+
+            Label title = new Label();
+            title.Dock = DockStyle.Top;
+            title.Height = 86;
+            title.Text = "一键清屏";
+            title.TextAlign = ContentAlignment.MiddleCenter;
+            title.ForeColor = Color.FromArgb(25, 25, 25);
+            title.BackColor = Color.FromArgb(246, 246, 246);
+            title.Font = new Font("Microsoft YaHei UI", 24.0f, FontStyle.Bold);
+            title.Click += delegate { closeAll(); };
+            panel.Controls.Add(title);
+
+            Label body = new Label();
+            body.Dock = DockStyle.Fill;
+            body.Text = "桌面图标已隐藏在清屏界面后面";
+            body.TextAlign = ContentAlignment.MiddleCenter;
+            body.ForeColor = Color.FromArgb(80, 80, 80);
+            body.BackColor = Color.FromArgb(246, 246, 246);
+            body.Font = new Font("Microsoft YaHei UI", 12.0f, FontStyle.Regular);
+            body.Click += delegate { closeAll(); };
+            panel.Controls.Add(body);
+            body.BringToFront();
+
+            Label hint = new Label();
+            hint.Dock = DockStyle.Bottom;
+            hint.Height = 46;
+            hint.Text = "Esc 或点击窗口恢复";
+            hint.TextAlign = ContentAlignment.MiddleCenter;
+            hint.ForeColor = Color.FromArgb(120, 120, 120);
+            hint.BackColor = Color.FromArgb(246, 246, 246);
+            hint.Font = new Font("Microsoft YaHei UI", 10.0f, FontStyle.Regular);
+            hint.Click += delegate { closeAll(); };
+            panel.Controls.Add(hint);
+            hint.BringToFront();
         }
 
         protected override void OnShown(EventArgs e)
