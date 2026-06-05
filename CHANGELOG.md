@@ -1,5 +1,10 @@
 # Changelog
 
+## 0.3.1
+
+- Restored the full desktop cover layer so all desktop icons stay hidden behind the app.
+- Kept the visible `一键清屏` interface compact at about 30% of the main screen area.
+
 ## 0.3.0
 
 - Changed the Windows executable from a full-screen overlay to a compact interface.

@@ -37,7 +37,7 @@ The extension is built with Manifest V3 and targets Chromium-based browsers, inc
 
 ## Windows executable
 
-This repository also includes a Windows executable version. It opens a compact desktop-background overlay titled `一键清屏` so desktop icons and windows stay hidden behind that interface, then restores on `Esc` or click. See [docs/WINDOWS_EXE.md](docs/WINDOWS_EXE.md).
+This repository also includes a Windows executable version. It covers the desktop with a clean wallpaper-style layer so icons and windows are hidden, while showing a compact center interface titled `一键清屏`. Restore on `Esc` or click. See [docs/WINDOWS_EXE.md](docs/WINDOWS_EXE.md).
 
 ## Privacy
 
